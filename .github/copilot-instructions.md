@@ -51,7 +51,9 @@ total_tokens = response.usage.total_tokens
 
 ## Key Files
 
-- `reasoning_model_cost.ipynb` - Main demonstration notebook
+- `reasoning_model_cost.ipynb` - Token cost comparison across reasoning effort levels
+- `openai_reasoning_controls.ipynb` - API controls (deliberation, stopping, output shaping)
+- `reasoning_workflow_patterns.ipynb` - Three production workflow patterns
 - `requirements.txt` - Project dependencies
 - `README.md` - Project documentation
 

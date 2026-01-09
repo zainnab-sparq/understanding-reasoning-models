@@ -1,59 +1,87 @@
-# Understanding Reasoning Models
+# Understanding OpenAI Reasoning Models
 
-A demonstration of OpenAI's GPT-5.2 reasoning capabilities, showing how different reasoning effort levels affect token usage and response quality.
+A comprehensive guide to OpenAI's GPT-5.2 reasoning capabilities. This project demonstrates how to control reasoning effort, understand token costs, and implement production-ready workflow patterns.
 
-## Overview
+## 📚 What's Included
 
-This project explores how reasoning models "think" before answering by comparing token usage (input, reasoning, and output tokens) across different reasoning effort levels:
+### 1. [reasoning_model_cost.ipynb](reasoning_model_cost.ipynb)
+**Token Cost Analysis** — Compare token usage across 5 reasoning effort levels.
 
-- **Minimal** - Fastest, cheapest, minimal internal reasoning
-- **Low** - Light reasoning overhead
-- **Medium** - Balanced (default)
-- **High** - Maximum reasoning depth, highest token usage
+- Tests `none`, `low`, `medium`, `high`, and `xhigh` reasoning efforts
+- Visualizes token breakdown (input, reasoning, output)
+- Calculates actual costs using OpenAI pricing
+- Uses a spatial reasoning puzzle to demonstrate accuracy vs cost tradeoffs
 
-## The Test Prompt
+### 2. [openai_reasoning_controls.ipynb](openai_reasoning_controls.ipynb)
+**API Controls Deep Dive** — Learn the three main ways to control reasoning models.
 
-We use a spatial reasoning puzzle to test the model's ability to catch subtle details:
+- **Deliberation Control**: `reasoning={"effort": "low|medium|high"}`
+- **Stopping Controls**: `max_output_tokens` to cap costs
+- **Output Shaping**: Prompt engineering for structured JSON output
 
-> "I live in Houston, Texas and I have a box with a big hole in it and I need to ship a baseball. I put the ball into the box. Tape it up. Put a label on it. Then send it to my friend in New York City, New York. He picks up the box on Union Street. Takes a cab to his out on Wilson Blvd and goes into his kitchen. He then opens the box and pours out the contents. Where is the baseball?"
+### 3. [reasoning_workflow_patterns.ipynb](reasoning_workflow_patterns.ipynb)
+**Production Workflow Patterns** — Three battle-tested patterns for real applications.
 
-The correct answer requires recognizing that the baseball likely fell out through the hole during shipping.
+- **Pattern 1: Fast Path, Then Escalate** — Try cheap first, escalate if uncertain
+- **Pattern 2: Always Reason for High-Risk** — Financial/legal decisions always use high effort
+- **Pattern 3: Draft, Then Verify** — Fast generation + thorough review
 
-## Setup
+## 🚀 Quick Start
 
-### 1. Install Dependencies
+### 1. Clone the Repository
+```bash
+git clone https://github.com/suspicious-cow/understanding-reasoning-models.git
+cd understanding-reasoning-models
+```
 
+### 2. Create Environment (Recommended)
+```bash
+conda create -n reasoning-models-demo python=3.11
+conda activate reasoning-models-demo
+```
+
+### 3. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Set Your OpenAI API Key
-
+### 4. Set Your OpenAI API Key
 ```bash
-# Windows
+# Windows (Command Prompt)
 set OPENAI_API_KEY=your-api-key-here
+
+# Windows (PowerShell)
+$env:OPENAI_API_KEY="your-api-key-here"
 
 # macOS/Linux
 export OPENAI_API_KEY=your-api-key-here
 ```
 
-Or add it directly in the notebook (not recommended for production).
+### 5. Run the Notebooks
+Open in VS Code or Jupyter:
+```bash
+jupyter notebook
+# or
+code .
+```
 
-### 3. Run the Notebook
+## 💰 Pricing Reference (as of January 2026)
 
-Open `reasoning_model_cost.ipynb` in Jupyter or VS Code and run all cells.
+| Token Type | Price per 1M Tokens |
+|------------|---------------------|
+| Input      | $1.75               |
+| Output (includes reasoning) | $14.00 |
 
-## Key Findings
+> **Note:** Reasoning tokens are billed as output tokens. Higher reasoning effort = more tokens = higher cost.
 
-- **Reasoning tokens** increase significantly with higher effort levels
-- Higher reasoning effort generally produces more accurate answers for complex problems
-- The trade-off is cost and latency vs. accuracy
-- Simple questions don't benefit much from high reasoning effort
+## 🔑 Key Concepts
 
-## API Reference
+### Reasoning Tokens
+- **What they are**: Hidden "thinking" tokens the model uses internally before answering
+- **You pay for them**: They're billed as output tokens even though you don't see them
+- **Control them**: Use `reasoning={"effort": "low|medium|high"}` to control how much the model thinks
 
-This project uses the OpenAI **Responses API**:
-
+### The Responses API
 ```python
 from openai import OpenAI
 client = OpenAI()
@@ -61,13 +89,68 @@ client = OpenAI()
 response = client.responses.create(
     model="gpt-5.2",
     input=[{"role": "user", "content": "Your prompt here"}],
-    reasoning={"effort": "medium"}  # minimal, low, medium, or high
+    reasoning={"effort": "medium"}  # low, medium, high
 )
 
+# Access the answer
 print(response.output_text)
-print(response.usage.output_tokens_details.reasoning_tokens)
+
+# Check token usage
+print(f"Reasoning tokens: {response.usage.output_tokens_details.reasoning_tokens}")
+print(f"Total output tokens: {response.usage.output_tokens}")
 ```
 
-## License
+## 📊 Expected Results
 
-MIT
+### Token Usage by Effort Level (Example)
+| Effort | Reasoning Tokens | Total Output | Use Case |
+|--------|------------------|--------------|----------|
+| none   | 0                | ~200         | Simple lookups |
+| low    | 0-50             | ~250         | Classification |
+| medium | 50-200           | ~400         | General tasks |
+| high   | 200-500+         | ~600+        | Complex analysis |
+
+### When to Use Each Pattern
+
+| Pattern | Best For | Trade-off |
+|---------|----------|-----------|
+| **Escalate** | Mixed difficulty workloads | Lower avg cost, variable latency |
+| **Always High** | Financial, legal, compliance | Higher cost, predictable quality |
+| **Draft+Verify** | Code generation, content | Two calls, catches errors |
+
+## 📁 Project Structure
+```
+understanding-reasoning-models/
+├── README.md                           # This file
+├── requirements.txt                    # Python dependencies
+├── reasoning_model_cost.ipynb          # Token cost comparison
+├── openai_reasoning_controls.ipynb     # API controls demo
+├── reasoning_workflow_patterns.ipynb   # Production patterns
+└── .github/
+    └── copilot-instructions.md         # GitHub Copilot config
+```
+
+## ⚠️ Important Notes
+
+1. **API Key Security**: Never commit your API key. Use environment variables.
+2. **Cost Awareness**: High reasoning effort can be 2-3x more expensive than low effort.
+3. **Not All Tasks Need Reasoning**: Simple questions (classifications, lookups) don't benefit from high effort.
+4. **Model Availability**: These notebooks use `gpt-5.2`. Ensure your API has access to this model.
+
+## 🤝 Contributing
+
+Feel free to open issues or PRs for:
+- Bug fixes
+- Additional workflow patterns
+- Documentation improvements
+- New example use cases
+
+## 📄 License
+
+MIT License
+
+## 🔗 Resources
+
+- [OpenAI API Documentation](https://platform.openai.com/docs)
+- [OpenAI Pricing](https://openai.com/pricing)
+- [Responses API Reference](https://platform.openai.com/docs/api-reference/responses)
