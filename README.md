@@ -41,7 +41,7 @@ Or add it directly in the notebook (not recommended for production).
 
 ### 3. Run the Notebook
 
-Open `reasoning_models_demo.ipynb` in Jupyter or VS Code and run all cells.
+Open `reasoning_model_cost.ipynb` in Jupyter or VS Code and run all cells.
 
 ## Key Findings
 

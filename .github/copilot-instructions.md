@@ -4,6 +4,12 @@
 
 This project demonstrates OpenAI's GPT-5.2 reasoning capabilities using the Responses API. It compares token usage across different reasoning effort levels (minimal, low, medium, high).
 
+## Environment
+
+- **Conda Environment**: `reasoning-models-demo`
+- **Python Version**: 3.11
+- Activate with: `conda activate reasoning-models-demo`
+
 ## Tech Stack
 
 - **Python 3.10+**
@@ -45,7 +51,7 @@ total_tokens = response.usage.total_tokens
 
 ## Key Files
 
-- `reasoning_models_demo.ipynb` - Main demonstration notebook
+- `reasoning_model_cost.ipynb` - Main demonstration notebook
 - `requirements.txt` - Project dependencies
 - `README.md` - Project documentation
 
